@@ -1,84 +1,63 @@
-#include <stdarg.h>
 #include <stdio.h>
-#include "main.h"
+#include <stdarg.h>
+#include <string.h>
 /**
-* _putchar - writes a character to stdout
-* @c: The character to print
+* print_char - Print a single character to stdout.
+* @c: The character to print.
 *
-* Return: 1 on success, -1 on error
+* Return: Always 1.
 */
-int _putchar(char c)
+int print_char(char c)
 {
-return (write(1, &c, 1));
+putchar(c);
+return (1);
 }
 /**
-* _printf - produces output according to a format
-* @format: character string containing directives
-*
-* Return: the number of characters printed (excluding the null byte)
-*/
+ * print_string - Print a null-terminated string to stdout.
+ * @s: The string to print.
+ *
+ * Return: The number of characters printed.
+ */
+int print_string(char *s)
+{
+int len = strlen(s);
+fputs(s, stdout);
+return (len);
+}
+typedef int (*print_fn)(void *);
+/**
+ * _printf - Print formatted output to stdout.
+ * @format: The format string.
+ * @...: The arguments to format into the string.
+ *
+ * Return: The number of characters printed (excluding the null byte).
+ */
 int _printf(const char *format, ...)
 {
 va_list args;
-int count = 0;
+int printed_chars = 0;
 va_start(args, format);
 while (*format)
 {
 if (*format == '%')
 {
 format++;
-if (*format == 'c')
+print_fn printers[] = { print_char, print_string, print_char };
+char specifiers[] = { 'c', 's', '%' };
+char *specifier = strchr(specifiers, *format);
+if (specifier)
 {
-count += _putchar(va_arg(args, int));
-}
-else if (*format == 's')
-{
-count += printf("%s", va_arg(args, char *));
-}
-else if (*format == 'd' || *format == 'i')
-{
-count += printf("%d", va_arg(args, int));
-}
-else if (*format == 'b')
-{
-unsigned int num = va_arg(args, unsigned int);
-int bit = 0;
-char binary[32];
-if (num == 0)
-{
-count += _putchar('0');
-}
-else
-{
-while (num > 0)
-{
-binary[bit++] = (num & 1) ? '1' : '0';
-num >>= 1;
-}
-while (bit--)
-{
-count += _putchar(binary[bit]);
-}
-}
-}
-else if (*format == '%')
-{
-count += _putchar('%');
-}
-else
-{
-_putchar('%');
-_putchar(*format);
-count += 2;
+int index = specifier - specifiers;
+void *arg = va_arg(args, void *);
+printed_chars += printers[index](arg);
 }
 }
 else
 {
-_putchar(*format);
-count++;
+printed_chars += print_char(*format);
 }
 format++;
 }
 va_end(args);
-return (count);
+return (printed_chars);
 }
