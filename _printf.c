@@ -1,84 +1,68 @@
 #include <stdarg.h>
-#include <stdio.h>
 #include "main.h"
 /**
-* _putchar - writes a character to stdout
-* @c: The character to print
-*
-* Return: 1 on success, -1 on error
-*/
-int _putchar(char c)
-{
-return (write(1, &c, 1));
-}
-/**
-* _printf - produces output according to a format
-* @format: character string containing directives
-*
-* Return: the number of characters printed (excluding the null byte)
-*/
-int _printf(const char *format, ...)
-{
-va_list args;
-int count = 0;
-va_start(args, format);
-while (*format)
-{
-if (*format == '%')
-{
-format++;
-if (*format == 'c')
-{
-count += _putchar(va_arg(args, int));
-}
-else if (*format == 's')
-{
-count += printf("%s", va_arg(args, char *));
-}
-else if (*format == 'd' || *format == 'i')
-{
-count += printf("%d", va_arg(args, int));
-}
-else if (*format == 'b')
-{
-unsigned int num = va_arg(args, unsigned int);
-int bit = 0;
-char binary[32];
-if (num == 0)
-{
-count += _putchar('0');
-}
-else
-{
-while (num > 0)
-{
-binary[bit++] = (num & 1) ? '1' : '0';
-num >>= 1;
-}
-while (bit--)
-{
-count += _putchar(binary[bit]);
-}
-}
-}
-else if (*format == '%')
-{
-count += _putchar('%');
-}
-else
-{
-_putchar('%');
-_putchar(*format);
-count += 2;
-}
-}
-else
-{
-_putchar(*format);
-count++;
-}
-format++;
-}
-va_end(args);
-return (count);
+  * _printf - function that prints output according to a format
+  * @format: format (c, s, d, %)
+  *
+  * Return: the number of characters printed
+  */
+
+int _printf(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+
+
+    for (const char* p = format; *p != '\0'; p++) {
+        if (*p == '%') {
+
+            p++;
+            switch (*p) {
+                case 'c':
+                    putchar(va_arg(args, int));
+                    break;
+                case 'd':
+                    {
+                        int num = va_arg(args, int);
+                        if (num < 0) {
+                            putchar('-');
+                            num = -num;
+                        }
+                        if (num == 0) {
+                            putchar('0');
+                        }
+                        else {
+                            int digits[10];
+                            int i = 0;
+                            while (num > 0) {
+                                digits[i++] = num % 10;
+                                num /= 10;
+                            }
+                            while (i > 0) {
+                                putchar(digits[--i] + '0');
+                            }
+                        }
+                    }
+                    break;
+                case 's':
+
+                    {
+                        const char* str = va_arg(args, const char*);
+                        while (*str != '\0') {
+                            putchar(*str++);
+                        }
+                    }
+                    break;
+                default
+
+                    putchar(*p);
+                    break;
+            }
+        }
+        else {
+
+            putchar(*p);
+        }
+    }
+
+    va_end(args);
 }
