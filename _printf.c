@@ -20,6 +20,7 @@ int _printf(const char* format, ...) {
                 case 'c':
                     putchar(va_arg(args, int));
                     break;
+                case 'i':
                 case 'd':
                     {
                         int num = va_arg(args, int);
