@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <stdio.h>
 #include "main.h"
 /**
   * _printf - function that prints output according to a format
@@ -10,9 +11,8 @@
 int _printf(const char* format, ...) {
     va_list args;
     va_start(args, format);
-
-
-    for (const char* p = format; *p != '\0'; p++) {
+    const char* p;
+    for (p = format; *p != '\0'; p++) {
         if (*p == '%') {
 
             p++;
@@ -53,7 +53,7 @@ int _printf(const char* format, ...) {
                         }
                     }
                     break;
-                default
+                default:
 
                     putchar(*p);
                     break;
@@ -66,4 +66,5 @@ int _printf(const char* format, ...) {
     }
 
     va_end(args);
+    return (0);
 }
