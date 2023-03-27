@@ -1,115 +1,84 @@
-#include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include "main.h"
 /**
- * _putchar - writes a character to stdout
- * @c: The character to print
- *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
- */
+* _putchar - writes a character to stdout
+* @c: The character to print
+*
+* Return: 1 on success, -1 on error
+*/
 int _putchar(char c)
 {
-        return (write(1, &c, 1));
+return (write(1, &c, 1));
 }
 /**
- * _printf - Custom printf function
- * @format: String to be printed, with optional format specifiers
- *
- * Return: Number of characters printed (excluding null byte used to end output
- * to strings)
- */
+* _printf - produces output according to a format
+* @format: character string containing directives
+*
+* Return: the number of characters printed (excluding the null byte)
+*/
 int _printf(const char *format, ...)
 {
-	va_list args;
-	int i = 0, j = 0, len = 0;
-	char *str, *s;
-
-	if (!format)
-		return (-1);
-
-	va_start(args, format);
-
-	while (format[i])
-	{
-		if (format[i] != '%')
-		{
-			_putchar(format[i]);
-			len++;
-			i++;
-			continue;
-		}
-
-		i++;
-
-		switch (format[i])
-		{
-			case '%':
-				_putchar('%');
-				len++;
-				break;
-
-			case 'c':
-				_putchar(va_arg(args, int));
-				len++;
-				break;
-
-			case 's':
-				s = va_arg(args, char *);
-				if (!s)
-					s = "(null)";
-				while (s[j])
-				{
-					_putchar(s[j]);
-					len++;
-					j++;
-				}
-				j = 0;
-				break;
-
-			case 'd':
-			case 'i':
-				len += print_number(va_arg(args, int));
-				break;
-
-			default:
-				_putchar('%');
-				_putchar(format[i]);
-				len += 2;
-		}
-
-		i++;
-	}
-
-	va_end(args);
-
-	return (len);
-}
-
-/**
- * print_number - Prints an integer
- * @n: Integer to be printed
- *
- * Return: Number of digits printed
- */
-int print_number(int n)
+va_list args;
+int count = 0;
+va_start(args, format);
+while (*format)
 {
-	unsigned int num;
-	int digits = 0;
-
-	if (n < 0)
-	{
-		_putchar('-');
-		digits++;
-		num = -n;
-	}
-	else
-		num = n;
-
-	if (num / 10)
-		digits += print_number(num / 10);
-
-	_putchar('0' + (num % 10));
-	digits++;
-
-	return (digits);
+if (*format == '%')
+{
+format++;
+if (*format == 'c')
+{
+count += _putchar(va_arg(args, int));
+}
+else if (*format == 's')
+{
+count += printf("%s", va_arg(args, char *));
+}
+else if (*format == 'd' || *format == 'i')
+{
+count += printf("%d", va_arg(args, int));
+}
+else if (*format == 'b')
+{
+unsigned int num = va_arg(args, unsigned int);
+int bit = 0;
+char binary[32];
+if (num == 0)
+{
+count += _putchar('0');
+}
+else
+{
+while (num > 0)
+{
+binary[bit++] = (num & 1) ? '1' : '0';
+num >>= 1;
+}
+while (bit--)
+{
+count += _putchar(binary[bit]);
+}
+}
+}
+else if (*format == '%')
+{
+count += _putchar('%');
+}
+else
+{
+_putchar('%');
+_putchar(*format);
+count += 2;
+}
+}
+else
+{
+_putchar(*format);
+count++;
+}
+format++;
+}
+va_end(args);
+return (count);
 }
