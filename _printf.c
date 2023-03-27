@@ -1,53 +1,64 @@
-#include <stdio.h>
+#include "holberton.h"
 #include <stdarg.h>
+#include <stdio.h>
 /**
-* _printf - print output according to a format
-* @format: format string
+* _printf - prints output according to a format.
+* @format: the format string
 *
-* Return: number of characters printed
-*         -1 if an error occurs
+* Return: the number of characters printed
 */
 int _printf(const char *format, ...)
 {
 va_list args;
+int i = 0, count = 0;
 va_start(args, format);
-int count = 0;
-char c;
-while ((c = *format++) != '\0')
+if (!format)
 {
-if (c == '%')
-{
-c = *format++;
-switch (c)
-{
-case 'c':
-putchar(va_arg(args, int));
-count++;
-break;
-case 's':
-{
-const char *str = va_arg(args, const char *);
-while (*str != '\0')
-{
-putchar(*str++);
-count++;
-}
-break;
-}
-case '%':
-putchar('%');
-count++;
-break;
-default:
-fprintf(stderr, "error: invalid conversion specifier %c\n", c);
-va_end(args);
 return (-1);
 }
-} else
+while (format[i])
 {
+if (format[i] == '%')
+{
+i++;
+if (format[i] == '%')
+{
+putchar('%');
+count++;
+}
+else if (format[i] == 'c')
+{
+char c = va_arg(args, int);
 putchar(c);
 count++;
 }
+else if (format[i] == 's')
+{
+char *str = va_arg(args, char *);
+if (!str)
+{
+str = "(null)";
+}
+while (*str)
+{
+putchar(*str);
+count++;
+str++;
+}
+}
+else
+{
+putchar('%');
+putchar(format[i]);
+count += 2;
+}
+}
+else
+{
+putchar(format[i]);
+count++;
+}
+i++;
 }
 va_end(args);
 return (count);
